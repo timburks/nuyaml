@@ -1,0 +1,21 @@
+;; Nukefile for the libsyck C library; part of the Nu YAML library.
+
+;; source files
+(set @c_files '("c/gram.c" "c/bytecode.c" "c/implicit.c" "c/emitter.c" 
+                "c/handler.c" "c/node.c" "c/syck.c" "c/token.c"
+                "c/syck_st.c" "c/yaml2byte.c"))
+
+
+(set @arch '("i386"))
+
+;; library description
+(set @library "libsyck")
+
+(compilation-tasks)
+(library-tasks)
+
+(task "default" => "library")
+
+(task "clobber" => "clean" is
+      (SH "rm -rf build")
+      (SH "rm -rf libsyck.a"))

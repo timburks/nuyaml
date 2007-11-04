@@ -1,0 +1,2005 @@
+Grammar
+
+    0 $accept: doc $end
+
+    1 doc: atom
+    2    | YAML_DOCSEP atom_or_empty
+    3    | /* empty */
+
+    4 atom: word_rep
+    5     | ind_rep
+
+    6 ind_rep: struct_rep
+    7        | YAML_TRANSFER ind_rep
+    8        | YAML_TAGURI ind_rep
+    9        | YAML_ANCHOR ind_rep
+   10        | indent_open ind_rep indent_flex_end
+
+   11 atom_or_empty: atom
+   12              | empty
+
+   13 empty: indent_open empty indent_end
+   14      | /* empty */
+   15      | YAML_ITRANSFER empty
+   16      | YAML_TRANSFER empty
+   17      | YAML_TAGURI empty
+   18      | YAML_ANCHOR empty
+
+   19 indent_open: YAML_IOPEN
+   20            | indent_open YAML_INDENT
+
+   21 indent_end: YAML_IEND
+
+   22 indent_sep: YAML_INDENT
+
+   23 indent_flex_end: YAML_IEND
+   24                | indent_sep indent_flex_end
+
+   25 word_rep: YAML_TRANSFER word_rep
+   26         | YAML_TAGURI word_rep
+   27         | YAML_ITRANSFER word_rep
+   28         | YAML_ANCHOR word_rep
+   29         | YAML_ALIAS
+   30         | YAML_WORD
+   31         | YAML_PLAIN
+   32         | indent_open word_rep indent_flex_end
+
+   33 struct_rep: YAML_BLOCK
+   34           | implicit_seq
+   35           | inline_seq
+   36           | implicit_map
+   37           | inline_map
+
+   38 implicit_seq: indent_open top_imp_seq indent_end
+   39             | indent_open in_implicit_seq indent_end
+
+   40 basic_seq: '-' atom_or_empty
+
+   41 top_imp_seq: YAML_TRANSFER indent_sep in_implicit_seq
+   42            | YAML_TRANSFER top_imp_seq
+   43            | YAML_TAGURI indent_sep in_implicit_seq
+   44            | YAML_TAGURI top_imp_seq
+   45            | YAML_ANCHOR indent_sep in_implicit_seq
+   46            | YAML_ANCHOR top_imp_seq
+
+   47 in_implicit_seq: basic_seq
+   48                | in_implicit_seq indent_sep basic_seq
+   49                | in_implicit_seq indent_sep
+
+   50 inline_seq: '[' in_inline_seq ']'
+   51           | '[' ']'
+
+   52 in_inline_seq: inline_seq_atom
+   53              | in_inline_seq ',' inline_seq_atom
+
+   54 inline_seq_atom: atom
+   55                | basic_mapping
+
+   56 implicit_map: indent_open top_imp_map indent_end
+   57             | indent_open in_implicit_map indent_end
+
+   58 top_imp_map: YAML_TRANSFER indent_sep in_implicit_map
+   59            | YAML_TRANSFER top_imp_map
+   60            | YAML_TAGURI indent_sep in_implicit_map
+   61            | YAML_TAGURI top_imp_map
+   62            | YAML_ANCHOR indent_sep in_implicit_map
+   63            | YAML_ANCHOR top_imp_map
+
+   64 complex_key: word_rep
+   65            | '?' atom indent_sep
+
+   66 complex_value: atom_or_empty
+
+   67 complex_mapping: complex_key ':' complex_value
+
+   68 in_implicit_map: complex_mapping
+   69                | in_implicit_map indent_sep basic_seq
+   70                | in_implicit_map indent_sep complex_mapping
+   71                | in_implicit_map indent_sep
+
+   72 basic_mapping: atom ':' atom_or_empty
+
+   73 inline_map: '{' in_inline_map '}'
+   74           | '{' '}'
+
+   75 in_inline_map: inline_map_atom
+   76              | in_inline_map ',' inline_map_atom
+
+   77 inline_map_atom: atom
+   78                | basic_mapping
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+',' (44) 53 76
+'-' (45) 40
+':' (58) 67 72
+'?' (63) 65
+'[' (91) 50 51
+']' (93) 50 51
+'{' (123) 73 74
+'}' (125) 73 74
+error (256)
+YAML_ANCHOR (258) 9 18 28 45 46 62 63
+YAML_ALIAS (259) 29
+YAML_TRANSFER (260) 7 16 25 41 42 58 59
+YAML_TAGURI (261) 8 17 26 43 44 60 61
+YAML_ITRANSFER (262) 15 27
+YAML_WORD (263) 30
+YAML_PLAIN (264) 31
+YAML_BLOCK (265) 33
+YAML_DOCSEP (266) 2
+YAML_IOPEN (267) 19
+YAML_INDENT (268) 20 22
+YAML_IEND (269) 21 23
+
+
+Nonterminals, with rules where they appear
+
+$accept (23)
+    on left: 0
+doc (24)
+    on left: 1 2 3, on right: 0
+atom (25)
+    on left: 4 5, on right: 1 11 54 65 72 77
+ind_rep (26)
+    on left: 6 7 8 9 10, on right: 5 7 8 9 10
+atom_or_empty (27)
+    on left: 11 12, on right: 2 40 66 72
+empty (28)
+    on left: 13 14 15 16 17 18, on right: 12 13 15 16 17 18
+indent_open (29)
+    on left: 19 20, on right: 10 13 20 32 38 39 56 57
+indent_end (30)
+    on left: 21, on right: 13 38 39 56 57
+indent_sep (31)
+    on left: 22, on right: 24 41 43 45 48 49 58 60 62 65 69 70 71
+indent_flex_end (32)
+    on left: 23 24, on right: 10 24 32
+word_rep (33)
+    on left: 25 26 27 28 29 30 31 32, on right: 4 25 26 27 28 32 64
+struct_rep (34)
+    on left: 33 34 35 36 37, on right: 6
+implicit_seq (35)
+    on left: 38 39, on right: 34
+basic_seq (36)
+    on left: 40, on right: 47 48 69
+top_imp_seq (37)
+    on left: 41 42 43 44 45 46, on right: 38 42 44 46
+in_implicit_seq (38)
+    on left: 47 48 49, on right: 39 41 43 45 48 49
+inline_seq (39)
+    on left: 50 51, on right: 35
+in_inline_seq (40)
+    on left: 52 53, on right: 50 53
+inline_seq_atom (41)
+    on left: 54 55, on right: 52 53
+implicit_map (42)
+    on left: 56 57, on right: 36
+top_imp_map (43)
+    on left: 58 59 60 61 62 63, on right: 56 59 61 63
+complex_key (44)
+    on left: 64 65, on right: 67
+complex_value (45)
+    on left: 66, on right: 67
+complex_mapping (46)
+    on left: 67, on right: 68 70
+in_implicit_map (47)
+    on left: 68 69 70 71, on right: 57 58 60 62 69 70 71
+basic_mapping (48)
+    on left: 72, on right: 55 78
+inline_map (49)
+    on left: 73 74, on right: 37
+in_inline_map (50)
+    on left: 75 76, on right: 73 76
+inline_map_atom (51)
+    on left: 77 78, on right: 75 76
+
+
+state 0
+
+    0 $accept: . doc $end
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_DOCSEP     shift, and go to state 9
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 3 (doc)
+
+    doc           go to state 13
+    atom          go to state 14
+    ind_rep       go to state 15
+    indent_open   go to state 16
+    word_rep      go to state 17
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 1
+
+    9 ind_rep: YAML_ANCHOR . ind_rep
+   28 word_rep: YAML_ANCHOR . word_rep
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 23
+    indent_open   go to state 16
+    word_rep      go to state 24
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 2
+
+   29 word_rep: YAML_ALIAS .
+
+    $default  reduce using rule 29 (word_rep)
+
+
+state 3
+
+    7 ind_rep: YAML_TRANSFER . ind_rep
+   25 word_rep: YAML_TRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 25
+    indent_open   go to state 16
+    word_rep      go to state 26
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 4
+
+    8 ind_rep: YAML_TAGURI . ind_rep
+   26 word_rep: YAML_TAGURI . word_rep
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 27
+    indent_open   go to state 16
+    word_rep      go to state 28
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 5
+
+   27 word_rep: YAML_ITRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    indent_open  go to state 32
+    word_rep     go to state 33
+
+
+state 6
+
+   30 word_rep: YAML_WORD .
+
+    $default  reduce using rule 30 (word_rep)
+
+
+state 7
+
+   31 word_rep: YAML_PLAIN .
+
+    $default  reduce using rule 31 (word_rep)
+
+
+state 8
+
+   33 struct_rep: YAML_BLOCK .
+
+    $default  reduce using rule 33 (struct_rep)
+
+
+state 9
+
+    2 doc: YAML_DOCSEP . atom_or_empty
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    atom           go to state 38
+    ind_rep        go to state 15
+    atom_or_empty  go to state 39
+    empty          go to state 40
+    indent_open    go to state 41
+    word_rep       go to state 17
+    struct_rep     go to state 18
+    implicit_seq   go to state 19
+    inline_seq     go to state 20
+    implicit_map   go to state 21
+    inline_map     go to state 22
+
+
+state 10
+
+   19 indent_open: YAML_IOPEN .
+
+    $default  reduce using rule 19 (indent_open)
+
+
+state 11
+
+   50 inline_seq: '[' . in_inline_seq ']'
+   51           | '[' . ']'
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    ']'             shift, and go to state 42
+    '{'             shift, and go to state 12
+
+    atom             go to state 43
+    ind_rep          go to state 15
+    indent_open      go to state 16
+    word_rep         go to state 17
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    inline_seq       go to state 20
+    in_inline_seq    go to state 44
+    inline_seq_atom  go to state 45
+    implicit_map     go to state 21
+    basic_mapping    go to state 46
+    inline_map       go to state 22
+
+
+state 12
+
+   73 inline_map: '{' . in_inline_map '}'
+   74           | '{' . '}'
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+    '}'             shift, and go to state 47
+
+    atom             go to state 48
+    ind_rep          go to state 15
+    indent_open      go to state 16
+    word_rep         go to state 17
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    inline_seq       go to state 20
+    implicit_map     go to state 21
+    basic_mapping    go to state 49
+    inline_map       go to state 22
+    in_inline_map    go to state 50
+    inline_map_atom  go to state 51
+
+
+state 13
+
+    0 $accept: doc . $end
+
+    $end  shift, and go to state 52
+
+
+state 14
+
+    1 doc: atom .
+
+    $default  reduce using rule 1 (doc)
+
+
+state 15
+
+    5 atom: ind_rep .
+
+    $default  reduce using rule 5 (atom)
+
+
+state 16
+
+   10 ind_rep: indent_open . ind_rep indent_flex_end
+   20 indent_open: indent_open . YAML_INDENT
+   32 word_rep: indent_open . word_rep indent_flex_end
+   38 implicit_seq: indent_open . top_imp_seq indent_end
+   39             | indent_open . in_implicit_seq indent_end
+   56 implicit_map: indent_open . top_imp_map indent_end
+   57             | indent_open . in_implicit_map indent_end
+
+    YAML_ANCHOR     shift, and go to state 53
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 54
+    YAML_TAGURI     shift, and go to state 55
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 56
+    '-'             shift, and go to state 57
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+    '?'             shift, and go to state 58
+
+    ind_rep          go to state 59
+    indent_open      go to state 16
+    word_rep         go to state 60
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    basic_seq        go to state 61
+    top_imp_seq      go to state 62
+    in_implicit_seq  go to state 63
+    inline_seq       go to state 20
+    implicit_map     go to state 21
+    top_imp_map      go to state 64
+    complex_key      go to state 65
+    complex_mapping  go to state 66
+    in_implicit_map  go to state 67
+    inline_map       go to state 22
+
+
+state 17
+
+    4 atom: word_rep .
+
+    $default  reduce using rule 4 (atom)
+
+
+state 18
+
+    6 ind_rep: struct_rep .
+
+    $default  reduce using rule 6 (ind_rep)
+
+
+state 19
+
+   34 struct_rep: implicit_seq .
+
+    $default  reduce using rule 34 (struct_rep)
+
+
+state 20
+
+   35 struct_rep: inline_seq .
+
+    $default  reduce using rule 35 (struct_rep)
+
+
+state 21
+
+   36 struct_rep: implicit_map .
+
+    $default  reduce using rule 36 (struct_rep)
+
+
+state 22
+
+   37 struct_rep: inline_map .
+
+    $default  reduce using rule 37 (struct_rep)
+
+
+state 23
+
+    9 ind_rep: YAML_ANCHOR ind_rep .
+
+    $default  reduce using rule 9 (ind_rep)
+
+
+state 24
+
+   28 word_rep: YAML_ANCHOR word_rep .
+
+    $default  reduce using rule 28 (word_rep)
+
+
+state 25
+
+    7 ind_rep: YAML_TRANSFER ind_rep .
+
+    $default  reduce using rule 7 (ind_rep)
+
+
+state 26
+
+   25 word_rep: YAML_TRANSFER word_rep .
+
+    $default  reduce using rule 25 (word_rep)
+
+
+state 27
+
+    8 ind_rep: YAML_TAGURI ind_rep .
+
+    $default  reduce using rule 8 (ind_rep)
+
+
+state 28
+
+   26 word_rep: YAML_TAGURI word_rep .
+
+    $default  reduce using rule 26 (word_rep)
+
+
+state 29
+
+   28 word_rep: YAML_ANCHOR . word_rep
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    indent_open  go to state 32
+    word_rep     go to state 24
+
+
+state 30
+
+   25 word_rep: YAML_TRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    indent_open  go to state 32
+    word_rep     go to state 26
+
+
+state 31
+
+   26 word_rep: YAML_TAGURI . word_rep
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    indent_open  go to state 32
+    word_rep     go to state 28
+
+
+state 32
+
+   20 indent_open: indent_open . YAML_INDENT
+   32 word_rep: indent_open . word_rep indent_flex_end
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 56
+
+    indent_open  go to state 32
+    word_rep     go to state 68
+
+
+state 33
+
+   27 word_rep: YAML_ITRANSFER word_rep .
+
+    $default  reduce using rule 27 (word_rep)
+
+
+state 34
+
+    9 ind_rep: YAML_ANCHOR . ind_rep
+   18 empty: YAML_ANCHOR . empty
+   28 word_rep: YAML_ANCHOR . word_rep
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 23
+    empty         go to state 69
+    indent_open   go to state 41
+    word_rep      go to state 24
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 35
+
+    7 ind_rep: YAML_TRANSFER . ind_rep
+   16 empty: YAML_TRANSFER . empty
+   25 word_rep: YAML_TRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 25
+    empty         go to state 70
+    indent_open   go to state 41
+    word_rep      go to state 26
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 36
+
+    8 ind_rep: YAML_TAGURI . ind_rep
+   17 empty: YAML_TAGURI . empty
+   26 word_rep: YAML_TAGURI . word_rep
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 27
+    empty         go to state 71
+    indent_open   go to state 41
+    word_rep      go to state 28
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 37
+
+   15 empty: YAML_ITRANSFER . empty
+   27 word_rep: YAML_ITRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 72
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 73
+    YAML_TAGURI     shift, and go to state 74
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    $default  reduce using rule 14 (empty)
+
+    empty        go to state 75
+    indent_open  go to state 76
+    word_rep     go to state 33
+
+
+state 38
+
+   11 atom_or_empty: atom .
+
+    $default  reduce using rule 11 (atom_or_empty)
+
+
+state 39
+
+    2 doc: YAML_DOCSEP atom_or_empty .
+
+    $default  reduce using rule 2 (doc)
+
+
+state 40
+
+   12 atom_or_empty: empty .
+
+    $default  reduce using rule 12 (atom_or_empty)
+
+
+state 41
+
+   10 ind_rep: indent_open . ind_rep indent_flex_end
+   13 empty: indent_open . empty indent_end
+   20 indent_open: indent_open . YAML_INDENT
+   32 word_rep: indent_open . word_rep indent_flex_end
+   38 implicit_seq: indent_open . top_imp_seq indent_end
+   39             | indent_open . in_implicit_seq indent_end
+   56 implicit_map: indent_open . top_imp_map indent_end
+   57             | indent_open . in_implicit_map indent_end
+
+    YAML_ANCHOR     shift, and go to state 77
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 78
+    YAML_TAGURI     shift, and go to state 79
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 56
+    '-'             shift, and go to state 57
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+    '?'             shift, and go to state 58
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep          go to state 59
+    empty            go to state 80
+    indent_open      go to state 41
+    word_rep         go to state 60
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    basic_seq        go to state 61
+    top_imp_seq      go to state 62
+    in_implicit_seq  go to state 63
+    inline_seq       go to state 20
+    implicit_map     go to state 21
+    top_imp_map      go to state 64
+    complex_key      go to state 65
+    complex_mapping  go to state 66
+    in_implicit_map  go to state 67
+    inline_map       go to state 22
+
+
+state 42
+
+   51 inline_seq: '[' ']' .
+
+    $default  reduce using rule 51 (inline_seq)
+
+
+state 43
+
+   54 inline_seq_atom: atom .
+   72 basic_mapping: atom . ':' atom_or_empty
+
+    ':'  shift, and go to state 81
+
+    $default  reduce using rule 54 (inline_seq_atom)
+
+
+state 44
+
+   50 inline_seq: '[' in_inline_seq . ']'
+   53 in_inline_seq: in_inline_seq . ',' inline_seq_atom
+
+    ']'  shift, and go to state 82
+    ','  shift, and go to state 83
+
+
+state 45
+
+   52 in_inline_seq: inline_seq_atom .
+
+    $default  reduce using rule 52 (in_inline_seq)
+
+
+state 46
+
+   55 inline_seq_atom: basic_mapping .
+
+    $default  reduce using rule 55 (inline_seq_atom)
+
+
+state 47
+
+   74 inline_map: '{' '}' .
+
+    $default  reduce using rule 74 (inline_map)
+
+
+state 48
+
+   72 basic_mapping: atom . ':' atom_or_empty
+   77 inline_map_atom: atom .
+
+    ':'  shift, and go to state 81
+
+    $default  reduce using rule 77 (inline_map_atom)
+
+
+state 49
+
+   78 inline_map_atom: basic_mapping .
+
+    $default  reduce using rule 78 (inline_map_atom)
+
+
+state 50
+
+   73 inline_map: '{' in_inline_map . '}'
+   76 in_inline_map: in_inline_map . ',' inline_map_atom
+
+    '}'  shift, and go to state 84
+    ','  shift, and go to state 85
+
+
+state 51
+
+   75 in_inline_map: inline_map_atom .
+
+    $default  reduce using rule 75 (in_inline_map)
+
+
+state 52
+
+    0 $accept: doc $end .
+
+    $default  accept
+
+
+state 53
+
+    9 ind_rep: YAML_ANCHOR . ind_rep
+   28 word_rep: YAML_ANCHOR . word_rep
+   45 top_imp_seq: YAML_ANCHOR . indent_sep in_implicit_seq
+   46            | YAML_ANCHOR . top_imp_seq
+   62 top_imp_map: YAML_ANCHOR . indent_sep in_implicit_map
+   63            | YAML_ANCHOR . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 53
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 54
+    YAML_TAGURI     shift, and go to state 55
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 23
+    indent_open   go to state 16
+    indent_sep    go to state 87
+    word_rep      go to state 24
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 88
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 89
+    inline_map    go to state 22
+
+
+state 54
+
+    7 ind_rep: YAML_TRANSFER . ind_rep
+   25 word_rep: YAML_TRANSFER . word_rep
+   41 top_imp_seq: YAML_TRANSFER . indent_sep in_implicit_seq
+   42            | YAML_TRANSFER . top_imp_seq
+   58 top_imp_map: YAML_TRANSFER . indent_sep in_implicit_map
+   59            | YAML_TRANSFER . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 53
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 54
+    YAML_TAGURI     shift, and go to state 55
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 25
+    indent_open   go to state 16
+    indent_sep    go to state 90
+    word_rep      go to state 26
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 91
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 92
+    inline_map    go to state 22
+
+
+state 55
+
+    8 ind_rep: YAML_TAGURI . ind_rep
+   26 word_rep: YAML_TAGURI . word_rep
+   43 top_imp_seq: YAML_TAGURI . indent_sep in_implicit_seq
+   44            | YAML_TAGURI . top_imp_seq
+   60 top_imp_map: YAML_TAGURI . indent_sep in_implicit_map
+   61            | YAML_TAGURI . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 53
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 54
+    YAML_TAGURI     shift, and go to state 55
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    ind_rep       go to state 27
+    indent_open   go to state 16
+    indent_sep    go to state 93
+    word_rep      go to state 28
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 94
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 95
+    inline_map    go to state 22
+
+
+state 56
+
+   20 indent_open: indent_open YAML_INDENT .
+
+    $default  reduce using rule 20 (indent_open)
+
+
+state 57
+
+   40 basic_seq: '-' . atom_or_empty
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    atom           go to state 38
+    ind_rep        go to state 15
+    atom_or_empty  go to state 96
+    empty          go to state 40
+    indent_open    go to state 41
+    word_rep       go to state 17
+    struct_rep     go to state 18
+    implicit_seq   go to state 19
+    inline_seq     go to state 20
+    implicit_map   go to state 21
+    inline_map     go to state 22
+
+
+state 58
+
+   65 complex_key: '?' . atom indent_sep
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    atom          go to state 97
+    ind_rep       go to state 15
+    indent_open   go to state 16
+    word_rep      go to state 17
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    inline_map    go to state 22
+
+
+state 59
+
+   10 ind_rep: indent_open ind_rep . indent_flex_end
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 98
+
+    indent_sep       go to state 99
+    indent_flex_end  go to state 100
+
+
+state 60
+
+   32 word_rep: indent_open word_rep . indent_flex_end
+   64 complex_key: word_rep .
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 98
+
+    $default  reduce using rule 64 (complex_key)
+
+    indent_sep       go to state 99
+    indent_flex_end  go to state 101
+
+
+state 61
+
+   47 in_implicit_seq: basic_seq .
+
+    $default  reduce using rule 47 (in_implicit_seq)
+
+
+state 62
+
+   38 implicit_seq: indent_open top_imp_seq . indent_end
+
+    YAML_IEND  shift, and go to state 102
+
+    indent_end  go to state 103
+
+
+state 63
+
+   39 implicit_seq: indent_open in_implicit_seq . indent_end
+   48 in_implicit_seq: in_implicit_seq . indent_sep basic_seq
+   49                | in_implicit_seq . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 102
+
+    indent_end  go to state 104
+    indent_sep  go to state 105
+
+
+state 64
+
+   56 implicit_map: indent_open top_imp_map . indent_end
+
+    YAML_IEND  shift, and go to state 102
+
+    indent_end  go to state 106
+
+
+state 65
+
+   67 complex_mapping: complex_key . ':' complex_value
+
+    ':'  shift, and go to state 107
+
+
+state 66
+
+   68 in_implicit_map: complex_mapping .
+
+    $default  reduce using rule 68 (in_implicit_map)
+
+
+state 67
+
+   57 implicit_map: indent_open in_implicit_map . indent_end
+   69 in_implicit_map: in_implicit_map . indent_sep basic_seq
+   70                | in_implicit_map . indent_sep complex_mapping
+   71                | in_implicit_map . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 102
+
+    indent_end  go to state 108
+    indent_sep  go to state 109
+
+
+state 68
+
+   32 word_rep: indent_open word_rep . indent_flex_end
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 98
+
+    indent_sep       go to state 99
+    indent_flex_end  go to state 101
+
+
+state 69
+
+   18 empty: YAML_ANCHOR empty .
+
+    $default  reduce using rule 18 (empty)
+
+
+state 70
+
+   16 empty: YAML_TRANSFER empty .
+
+    $default  reduce using rule 16 (empty)
+
+
+state 71
+
+   17 empty: YAML_TAGURI empty .
+
+    $default  reduce using rule 17 (empty)
+
+
+state 72
+
+   18 empty: YAML_ANCHOR . empty
+   28 word_rep: YAML_ANCHOR . word_rep
+
+    YAML_ANCHOR     shift, and go to state 72
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 73
+    YAML_TAGURI     shift, and go to state 74
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    $default  reduce using rule 14 (empty)
+
+    empty        go to state 69
+    indent_open  go to state 76
+    word_rep     go to state 24
+
+
+state 73
+
+   16 empty: YAML_TRANSFER . empty
+   25 word_rep: YAML_TRANSFER . word_rep
+
+    YAML_ANCHOR     shift, and go to state 72
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 73
+    YAML_TAGURI     shift, and go to state 74
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    $default  reduce using rule 14 (empty)
+
+    empty        go to state 70
+    indent_open  go to state 76
+    word_rep     go to state 26
+
+
+state 74
+
+   17 empty: YAML_TAGURI . empty
+   26 word_rep: YAML_TAGURI . word_rep
+
+    YAML_ANCHOR     shift, and go to state 72
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 73
+    YAML_TAGURI     shift, and go to state 74
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+
+    $default  reduce using rule 14 (empty)
+
+    empty        go to state 71
+    indent_open  go to state 76
+    word_rep     go to state 28
+
+
+state 75
+
+   15 empty: YAML_ITRANSFER empty .
+
+    $default  reduce using rule 15 (empty)
+
+
+state 76
+
+   13 empty: indent_open . empty indent_end
+   20 indent_open: indent_open . YAML_INDENT
+   32 word_rep: indent_open . word_rep indent_flex_end
+
+    YAML_ANCHOR     shift, and go to state 72
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 73
+    YAML_TAGURI     shift, and go to state 74
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 56
+
+    $default  reduce using rule 14 (empty)
+
+    empty        go to state 80
+    indent_open  go to state 76
+    word_rep     go to state 68
+
+
+state 77
+
+    9 ind_rep: YAML_ANCHOR . ind_rep
+   18 empty: YAML_ANCHOR . empty
+   28 word_rep: YAML_ANCHOR . word_rep
+   45 top_imp_seq: YAML_ANCHOR . indent_sep in_implicit_seq
+   46            | YAML_ANCHOR . top_imp_seq
+   62 top_imp_map: YAML_ANCHOR . indent_sep in_implicit_map
+   63            | YAML_ANCHOR . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 77
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 78
+    YAML_TAGURI     shift, and go to state 79
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 23
+    empty         go to state 69
+    indent_open   go to state 41
+    indent_sep    go to state 87
+    word_rep      go to state 24
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 88
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 89
+    inline_map    go to state 22
+
+
+state 78
+
+    7 ind_rep: YAML_TRANSFER . ind_rep
+   16 empty: YAML_TRANSFER . empty
+   25 word_rep: YAML_TRANSFER . word_rep
+   41 top_imp_seq: YAML_TRANSFER . indent_sep in_implicit_seq
+   42            | YAML_TRANSFER . top_imp_seq
+   58 top_imp_map: YAML_TRANSFER . indent_sep in_implicit_map
+   59            | YAML_TRANSFER . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 77
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 78
+    YAML_TAGURI     shift, and go to state 79
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 25
+    empty         go to state 70
+    indent_open   go to state 41
+    indent_sep    go to state 90
+    word_rep      go to state 26
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 91
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 92
+    inline_map    go to state 22
+
+
+state 79
+
+    8 ind_rep: YAML_TAGURI . ind_rep
+   17 empty: YAML_TAGURI . empty
+   26 word_rep: YAML_TAGURI . word_rep
+   43 top_imp_seq: YAML_TAGURI . indent_sep in_implicit_seq
+   44            | YAML_TAGURI . top_imp_seq
+   60 top_imp_map: YAML_TAGURI . indent_sep in_implicit_map
+   61            | YAML_TAGURI . top_imp_map
+
+    YAML_ANCHOR     shift, and go to state 77
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 78
+    YAML_TAGURI     shift, and go to state 79
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    YAML_INDENT     shift, and go to state 86
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    ind_rep       go to state 27
+    empty         go to state 71
+    indent_open   go to state 41
+    indent_sep    go to state 93
+    word_rep      go to state 28
+    struct_rep    go to state 18
+    implicit_seq  go to state 19
+    top_imp_seq   go to state 94
+    inline_seq    go to state 20
+    implicit_map  go to state 21
+    top_imp_map   go to state 95
+    inline_map    go to state 22
+
+
+state 80
+
+   13 empty: indent_open empty . indent_end
+
+    YAML_IEND  shift, and go to state 102
+
+    indent_end  go to state 110
+
+
+state 81
+
+   72 basic_mapping: atom ':' . atom_or_empty
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    atom           go to state 38
+    ind_rep        go to state 15
+    atom_or_empty  go to state 111
+    empty          go to state 40
+    indent_open    go to state 41
+    word_rep       go to state 17
+    struct_rep     go to state 18
+    implicit_seq   go to state 19
+    inline_seq     go to state 20
+    implicit_map   go to state 21
+    inline_map     go to state 22
+
+
+state 82
+
+   50 inline_seq: '[' in_inline_seq ']' .
+
+    $default  reduce using rule 50 (inline_seq)
+
+
+state 83
+
+   53 in_inline_seq: in_inline_seq ',' . inline_seq_atom
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    atom             go to state 43
+    ind_rep          go to state 15
+    indent_open      go to state 16
+    word_rep         go to state 17
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    inline_seq       go to state 20
+    inline_seq_atom  go to state 112
+    implicit_map     go to state 21
+    basic_mapping    go to state 46
+    inline_map       go to state 22
+
+
+state 84
+
+   73 inline_map: '{' in_inline_map '}' .
+
+    $default  reduce using rule 73 (inline_map)
+
+
+state 85
+
+   76 in_inline_map: in_inline_map ',' . inline_map_atom
+
+    YAML_ANCHOR     shift, and go to state 1
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 3
+    YAML_TAGURI     shift, and go to state 4
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    atom             go to state 48
+    ind_rep          go to state 15
+    indent_open      go to state 16
+    word_rep         go to state 17
+    struct_rep       go to state 18
+    implicit_seq     go to state 19
+    inline_seq       go to state 20
+    implicit_map     go to state 21
+    basic_mapping    go to state 49
+    inline_map       go to state 22
+    inline_map_atom  go to state 113
+
+
+state 86
+
+   22 indent_sep: YAML_INDENT .
+
+    $default  reduce using rule 22 (indent_sep)
+
+
+state 87
+
+   45 top_imp_seq: YAML_ANCHOR indent_sep . in_implicit_seq
+   62 top_imp_map: YAML_ANCHOR indent_sep . in_implicit_map
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    '-'             shift, and go to state 57
+    '?'             shift, and go to state 58
+
+    indent_open      go to state 32
+    word_rep         go to state 114
+    basic_seq        go to state 61
+    in_implicit_seq  go to state 115
+    complex_key      go to state 65
+    complex_mapping  go to state 66
+    in_implicit_map  go to state 116
+
+
+state 88
+
+   46 top_imp_seq: YAML_ANCHOR top_imp_seq .
+
+    $default  reduce using rule 46 (top_imp_seq)
+
+
+state 89
+
+   63 top_imp_map: YAML_ANCHOR top_imp_map .
+
+    $default  reduce using rule 63 (top_imp_map)
+
+
+state 90
+
+   41 top_imp_seq: YAML_TRANSFER indent_sep . in_implicit_seq
+   58 top_imp_map: YAML_TRANSFER indent_sep . in_implicit_map
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    '-'             shift, and go to state 57
+    '?'             shift, and go to state 58
+
+    indent_open      go to state 32
+    word_rep         go to state 114
+    basic_seq        go to state 61
+    in_implicit_seq  go to state 117
+    complex_key      go to state 65
+    complex_mapping  go to state 66
+    in_implicit_map  go to state 118
+
+
+state 91
+
+   42 top_imp_seq: YAML_TRANSFER top_imp_seq .
+
+    $default  reduce using rule 42 (top_imp_seq)
+
+
+state 92
+
+   59 top_imp_map: YAML_TRANSFER top_imp_map .
+
+    $default  reduce using rule 59 (top_imp_map)
+
+
+state 93
+
+   43 top_imp_seq: YAML_TAGURI indent_sep . in_implicit_seq
+   60 top_imp_map: YAML_TAGURI indent_sep . in_implicit_map
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    '-'             shift, and go to state 57
+    '?'             shift, and go to state 58
+
+    indent_open      go to state 32
+    word_rep         go to state 114
+    basic_seq        go to state 61
+    in_implicit_seq  go to state 119
+    complex_key      go to state 65
+    complex_mapping  go to state 66
+    in_implicit_map  go to state 120
+
+
+state 94
+
+   44 top_imp_seq: YAML_TAGURI top_imp_seq .
+
+    $default  reduce using rule 44 (top_imp_seq)
+
+
+state 95
+
+   61 top_imp_map: YAML_TAGURI top_imp_map .
+
+    $default  reduce using rule 61 (top_imp_map)
+
+
+state 96
+
+   40 basic_seq: '-' atom_or_empty .
+
+    $default  reduce using rule 40 (basic_seq)
+
+
+state 97
+
+   65 complex_key: '?' atom . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    indent_sep  go to state 121
+
+
+state 98
+
+   23 indent_flex_end: YAML_IEND .
+
+    $default  reduce using rule 23 (indent_flex_end)
+
+
+state 99
+
+   24 indent_flex_end: indent_sep . indent_flex_end
+
+    YAML_INDENT  shift, and go to state 86
+    YAML_IEND    shift, and go to state 98
+
+    indent_sep       go to state 99
+    indent_flex_end  go to state 122
+
+
+state 100
+
+   10 ind_rep: indent_open ind_rep indent_flex_end .
+
+    $default  reduce using rule 10 (ind_rep)
+
+
+state 101
+
+   32 word_rep: indent_open word_rep indent_flex_end .
+
+    $default  reduce using rule 32 (word_rep)
+
+
+state 102
+
+   21 indent_end: YAML_IEND .
+
+    $default  reduce using rule 21 (indent_end)
+
+
+state 103
+
+   38 implicit_seq: indent_open top_imp_seq indent_end .
+
+    $default  reduce using rule 38 (implicit_seq)
+
+
+state 104
+
+   39 implicit_seq: indent_open in_implicit_seq indent_end .
+
+    $default  reduce using rule 39 (implicit_seq)
+
+
+state 105
+
+   48 in_implicit_seq: in_implicit_seq indent_sep . basic_seq
+   49                | in_implicit_seq indent_sep .
+
+    '-'  shift, and go to state 57
+
+    $default  reduce using rule 49 (in_implicit_seq)
+
+    basic_seq  go to state 123
+
+
+state 106
+
+   56 implicit_map: indent_open top_imp_map indent_end .
+
+    $default  reduce using rule 56 (implicit_map)
+
+
+state 107
+
+   67 complex_mapping: complex_key ':' . complex_value
+
+    YAML_ANCHOR     shift, and go to state 34
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 35
+    YAML_TAGURI     shift, and go to state 36
+    YAML_ITRANSFER  shift, and go to state 37
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_BLOCK      shift, and go to state 8
+    YAML_IOPEN      shift, and go to state 10
+    '['             shift, and go to state 11
+    '{'             shift, and go to state 12
+
+    $default  reduce using rule 14 (empty)
+
+    atom           go to state 38
+    ind_rep        go to state 15
+    atom_or_empty  go to state 124
+    empty          go to state 40
+    indent_open    go to state 41
+    word_rep       go to state 17
+    struct_rep     go to state 18
+    implicit_seq   go to state 19
+    inline_seq     go to state 20
+    implicit_map   go to state 21
+    complex_value  go to state 125
+    inline_map     go to state 22
+
+
+state 108
+
+   57 implicit_map: indent_open in_implicit_map indent_end .
+
+    $default  reduce using rule 57 (implicit_map)
+
+
+state 109
+
+   69 in_implicit_map: in_implicit_map indent_sep . basic_seq
+   70                | in_implicit_map indent_sep . complex_mapping
+   71                | in_implicit_map indent_sep .
+
+    YAML_ANCHOR     shift, and go to state 29
+    YAML_ALIAS      shift, and go to state 2
+    YAML_TRANSFER   shift, and go to state 30
+    YAML_TAGURI     shift, and go to state 31
+    YAML_ITRANSFER  shift, and go to state 5
+    YAML_WORD       shift, and go to state 6
+    YAML_PLAIN      shift, and go to state 7
+    YAML_IOPEN      shift, and go to state 10
+    '-'             shift, and go to state 57
+    '?'             shift, and go to state 58
+
+    $default  reduce using rule 71 (in_implicit_map)
+
+    indent_open      go to state 32
+    word_rep         go to state 114
+    basic_seq        go to state 126
+    complex_key      go to state 65
+    complex_mapping  go to state 127
+
+
+state 110
+
+   13 empty: indent_open empty indent_end .
+
+    $default  reduce using rule 13 (empty)
+
+
+state 111
+
+   72 basic_mapping: atom ':' atom_or_empty .
+
+    $default  reduce using rule 72 (basic_mapping)
+
+
+state 112
+
+   53 in_inline_seq: in_inline_seq ',' inline_seq_atom .
+
+    $default  reduce using rule 53 (in_inline_seq)
+
+
+state 113
+
+   76 in_inline_map: in_inline_map ',' inline_map_atom .
+
+    $default  reduce using rule 76 (in_inline_map)
+
+
+state 114
+
+   64 complex_key: word_rep .
+
+    $default  reduce using rule 64 (complex_key)
+
+
+state 115
+
+   45 top_imp_seq: YAML_ANCHOR indent_sep in_implicit_seq .
+   48 in_implicit_seq: in_implicit_seq . indent_sep basic_seq
+   49                | in_implicit_seq . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 45 (top_imp_seq)
+
+    indent_sep  go to state 105
+
+
+state 116
+
+   62 top_imp_map: YAML_ANCHOR indent_sep in_implicit_map .
+   69 in_implicit_map: in_implicit_map . indent_sep basic_seq
+   70                | in_implicit_map . indent_sep complex_mapping
+   71                | in_implicit_map . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 62 (top_imp_map)
+
+    indent_sep  go to state 109
+
+
+state 117
+
+   41 top_imp_seq: YAML_TRANSFER indent_sep in_implicit_seq .
+   48 in_implicit_seq: in_implicit_seq . indent_sep basic_seq
+   49                | in_implicit_seq . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 41 (top_imp_seq)
+
+    indent_sep  go to state 105
+
+
+state 118
+
+   58 top_imp_map: YAML_TRANSFER indent_sep in_implicit_map .
+   69 in_implicit_map: in_implicit_map . indent_sep basic_seq
+   70                | in_implicit_map . indent_sep complex_mapping
+   71                | in_implicit_map . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 58 (top_imp_map)
+
+    indent_sep  go to state 109
+
+
+state 119
+
+   43 top_imp_seq: YAML_TAGURI indent_sep in_implicit_seq .
+   48 in_implicit_seq: in_implicit_seq . indent_sep basic_seq
+   49                | in_implicit_seq . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 43 (top_imp_seq)
+
+    indent_sep  go to state 105
+
+
+state 120
+
+   60 top_imp_map: YAML_TAGURI indent_sep in_implicit_map .
+   69 in_implicit_map: in_implicit_map . indent_sep basic_seq
+   70                | in_implicit_map . indent_sep complex_mapping
+   71                | in_implicit_map . indent_sep
+
+    YAML_INDENT  shift, and go to state 86
+
+    $default  reduce using rule 60 (top_imp_map)
+
+    indent_sep  go to state 109
+
+
+state 121
+
+   65 complex_key: '?' atom indent_sep .
+
+    $default  reduce using rule 65 (complex_key)
+
+
+state 122
+
+   24 indent_flex_end: indent_sep indent_flex_end .
+
+    $default  reduce using rule 24 (indent_flex_end)
+
+
+state 123
+
+   48 in_implicit_seq: in_implicit_seq indent_sep basic_seq .
+
+    $default  reduce using rule 48 (in_implicit_seq)
+
+
+state 124
+
+   66 complex_value: atom_or_empty .
+
+    $default  reduce using rule 66 (complex_value)
+
+
+state 125
+
+   67 complex_mapping: complex_key ':' complex_value .
+
+    $default  reduce using rule 67 (complex_mapping)
+
+
+state 126
+
+   69 in_implicit_map: in_implicit_map indent_sep basic_seq .
+
+    $default  reduce using rule 69 (in_implicit_map)
+
+
+state 127
+
+   70 in_implicit_map: in_implicit_map indent_sep complex_mapping .
+
+    $default  reduce using rule 70 (in_implicit_map)

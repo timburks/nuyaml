@@ -1,0 +1,25 @@
+;; Nukefile for the YAML framework for Nu.
+
+;; source files
+(set @m_files     (filelist "^objc/.*\.m$"))
+(set @nu_files 	  (filelist "^nu/.*\.nu$"))
+(set @frameworks  '("Cocoa" "Nu"))
+
+(set @ldflags " -framework Cocoa -framework Nu -lsyck -L../libsyck ")
+(set @includes " -I../libsyck/c")
+
+
+;; framework description
+(set @framework "YAML")
+(set @framework_identifier "nu.programming.yaml")
+(set @framework_creator_code "ptrk")
+(set @framework_initializer "YamlInit")
+
+(compilation-tasks)
+(framework-tasks)
+
+(task "default" => "framework")
+
+(task "clobber" => "clean" is
+      (SH "rm -rf ./build")
+      (SH "rm -rf #{@framework}.framework"))
