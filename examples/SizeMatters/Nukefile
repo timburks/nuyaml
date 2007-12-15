@@ -1,0 +1,19 @@
+;; Nukefile for SizeMatters
+
+;; source files
+(set @nu_files 	  (filelist "^nu/.*nu$"))
+
+;; application description
+(set @application 	          "SizeMatters")
+(set @application_identifier  "nu.programming.yaml.examples.sizematters")
+(set @nib_files               (filelist "^resources/.*\.lproj/[^/]*\.nib$"))
+(set @frameworks              '("Cocoa" "Nu" "YAML"))
+
+;; tasks
+(compilation-tasks)
+(application-tasks)
+
+(task "default" => "application" is
+     ;; Making sure to copy the framework into the application's frameworks directory.
+     (make-directory "./SizeMatters.app/Contents/Frameworks/YAML.framework")
+     (SH "cp -rf ../../yaml/YAML.framework/ ./SizeMatters.app/Contents/Frameworks/YAML.framework/"))
