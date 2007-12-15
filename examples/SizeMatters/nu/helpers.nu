@@ -8,7 +8,7 @@
      (- (id) nil? is t))
 
 (class NSObject
-     (- (id) nil? is f))
+     (- (id) nil? is nil))
 
 ;; Ensures that the named framework is loaded from the .app's framework dir.
 (macro load-framework

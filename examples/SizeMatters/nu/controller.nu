@@ -15,10 +15,10 @@
               xmlArea
               yamlArea
               mainWindow)
-              
+     
      ;; Ensuring the application's main window is selected at startup.
      (imethod (void) awakeFromNib is
-        (@mainWindow makeKeyAndOrderFront: nil))
+          (@mainWindow makeKeyAndOrderFront: nil))
      
      ;; Hooks up to the conversion button in the nib.
      (imethod (void) convertXMLtoYAML:(id) sender is 
@@ -46,7 +46,8 @@
                 (self copyFile: the-file toTextArea: @xmlArea)))
      
      (- copyFile:(id) name toTextArea:(id) area is 
-        (set contents (((NSString alloc) initWithContentsOfFile: name
-                        encoding: NSUTF8StringEncoding
-                        error: nil) autorelease))
+        (set contents ((NSString alloc) initWithContentsOfFile: name
+                       encoding: NSUTF8StringEncoding
+                       error: nil))
+        
         (area setString: contents)))
