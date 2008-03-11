@@ -16,4 +16,5 @@
 (task "default" => "application" is
      ;; Making sure to copy the framework into the application's frameworks directory.
      (make-directory "./SizeMatters.app/Contents/Frameworks/YAML.framework")
-     (SH "cp -rf ../../yaml/YAML.framework/ ./SizeMatters.app/Contents/Frameworks/YAML.framework/"))
+     (SH "cp -rf ../../YAML.framework/ ./SizeMatters.app/Contents/Frameworks/YAML.framework/"))
+    
