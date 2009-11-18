@@ -1,4 +1,4 @@
-(load "yaml/YAML")
+(load "YAML")
 
 (class TestExtensions is NuTestCase
      (- (id) testStringIndent is

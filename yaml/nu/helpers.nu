@@ -5,7 +5,7 @@
      (newName appendString:":")
      newName)
 
-(macro reader 
+(macro-0 reader 
      (set __name ((car margs) stringValue)) 
      (_class addInstanceVariable:__name 
              signature:"@") 
@@ -13,7 +13,7 @@
              signature:"@@:" 
              body:(do () (self valueForIvar:__name)))) 
 
-(macro writer 
+(macro-0 writer 
      (set __name ((car margs) stringValue)) 
      (_class addInstanceVariable:__name 
              signature:"@") 
@@ -21,7 +21,7 @@
              signature:"v@:" 
              body:(do (new) (self setValue:new forIvar:__name)))) 
 
-(macro accessor 
+(macro-0 accessor 
      (set __name ((car margs) stringValue)) 
      (_class addInstanceVariable:__name 
              signature:"@") 
