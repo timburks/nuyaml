@@ -5,6 +5,7 @@
 (set @nu_files 	  (filelist "^nu/.*\.nu$"))
 (set @frameworks  '("Cocoa" "Nu"))
 
+(set @arch '("i386" "x86_64"))
 (set @cflags "-g -fobjc-gc")
 (set @ldflags " -framework Cocoa -framework Nu -lsyck -L../libsyck ")
 (set @includes " -I../libsyck/c")

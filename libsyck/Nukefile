@@ -6,7 +6,7 @@
                 "c/syck_st.c" "c/yaml2byte.c"))
 
 
-(set @arch '("i386"))
+(set @arch '("i386" "x86_64"))
 
 ;; library description
 (set @library "libsyck")
